@@ -1,0 +1,5 @@
+representation,features,% of matrix non-zero
+BoW unigrams,8059,0.903
+TF-IDF unigrams,8059,0.903
+TF-IDF uni+bigrams,81764,0.204
+"TF-IDF uni+bigrams, min_df=2",17460,0.627

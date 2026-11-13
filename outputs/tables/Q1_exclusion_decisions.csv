@@ -1,0 +1,12 @@
+,label,words,physics_subject,ml_terms,rule_met,decision
+38,ai,16,True,0,R2,exclude
+151,ai,107,True,0,R2,exclude
+245,ai,120,True,0,R2,exclude
+248,ai,116,True,0,R2,exclude
+513,classical,150,True,0,none,keep
+620,ai,191,True,0,R2,exclude
+938,classical,709,False,0,none,keep
+1078,classical,765,False,0,none,keep
+1106,ai,780,False,4,none,keep
+1122,classical,2075,False,0,R1,exclude
+1124,classical,1206,False,0,none,keep
