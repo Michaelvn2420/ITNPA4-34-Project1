@@ -21,7 +21,11 @@ from sklearn.dummy import DummyClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_validate, learning_curve
 from sklearn.metrics import make_scorer, recall_score, f1_score, balanced_accuracy_score, accuracy_score, classification_report, ConfusionMatrixDisplay, PrecisionRecallDisplay
-
+from sklearn.svm import LinearSVC
+from sklearn.naive_bayes import ComplementNB
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
 
 # Repo root = the folder above notebooks/
 try:
@@ -609,3 +613,158 @@ sens = pd.DataFrame({
 }, index=["with exclusions", "without exclusions"]).round(3)
 print(sens)
 sens.to_csv(TAB / "Q1_exclusion_sensitivity.csv")
+
+# %% Q2.1 (A) Six scikit-learn models, same features (TF-IDF uni+bigrams, min_df=2), default settings
+def tfidf():
+    # one shared feature recipe for every model (option A); min_df=2 drops terms seen in only one abstract
+    return TfidfVectorizer(ngram_range=(1, 2), min_df=2)
+
+models = {
+    "Complement NB":       ComplementNB(),
+    "Logistic regression": LogisticRegression(max_iter=2000),          # max_iter raised only so it converges
+    "LinearSVC":           LinearSVC(),
+    "Random Forest":       RandomForestClassifier(random_state=SEED, n_jobs=-1),
+    "KNN":                 KNeighborsClassifier(),
+    "MLP":                 MLPClassifier(random_state=SEED, max_iter=300),  # max_iter raised only so it converges
+}
+
+def evaluate(name, pipe):
+    cvres = cross_validate(pipe, X_tr, y_tr, cv=cv, scoring=scoring, return_train_score=True)
+    t0 = time.perf_counter()
+    pipe.fit(X_tr, y_tr)
+    fit_s = time.perf_counter() - t0
+    pred = pipe.predict(X_te)
+    return pred, {
+        "model": name,
+        "CV train macro-F1": cvres["train_f1_macro"].mean(),
+        "CV val macro-F1":   cvres["test_f1_macro"].mean(),
+        "CV val std":        cvres["test_f1_macro"].std(),
+        "CV val AI recall":  cvres["test_ai_recall"].mean(),
+        "test accuracy":     accuracy_score(y_te, pred),
+        "test macro-F1":     f1_score(y_te, pred, average="macro"),
+        "test bal. acc":     balanced_accuracy_score(y_te, pred),
+        "test AI recall":    recall_score(y_te, pred, pos_label="ai"),
+        "fit time (s)":      fit_s,
+    }
+
+rows, test_preds, fitted = [], {}, {}
+for name, model in models.items():
+    pipe = Pipeline([("v", tfidf()), ("m", model)])
+    test_preds[name], row = evaluate(name, pipe)
+    fitted[name] = pipe
+    rows.append(row)
+    print(f"{name:20s} done")
+
+q21_results = pd.DataFrame(rows).set_index("model").round(3)
+print(q21_results.T.to_string())
+
+# %% Q2.1 (B) LSTM: reads the words IN ORDER (the only model here that uses word order)
+import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"        # hide TensorFlow's start-up messages
+import keras
+from keras import layers
+
+VOCAB, SEQ_LEN = 10000, 200     # 10k most frequent words; 200 tokens covers ~95% of cleaned abstracts in full
+
+def build_lstm():
+    model = keras.Sequential([
+        keras.Input(shape=(SEQ_LEN,)),
+        layers.Embedding(VOCAB, 32, mask_zero=True),   # mask_zero: ignore the padding zeros at the end
+        layers.LSTM(32),
+        layers.Dense(1, activation="sigmoid"),         # one output = probability of "ai"
+    ])
+    model.compile(optimizer="adam", loss="binary_crossentropy")
+    return model
+
+def fit_lstm(x_texts, y_labels, seed):
+    keras.utils.set_random_seed(seed)
+    tv = layers.TextVectorization(max_tokens=VOCAB, output_sequence_length=SEQ_LEN)
+    tv.adapt(x_texts.values)                           # vocabulary from the training part only
+    model = build_lstm()
+    stop = keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True)
+    model.fit(tv(x_texts.values), (y_labels == "ai").astype(int).values, epochs=40, batch_size=32,
+              validation_split=0.15, callbacks=[stop], verbose=0)
+    return tv, model
+
+def predict_lstm(tv, model, x_texts):
+    p = model.predict(tv(x_texts.values), verbose=0).ravel()
+    return np.where(p >= 0.5, "ai", "classical")      # threshold 0.5 on the sigmoid (not argmax)
+
+# Same 5 folds as every other model
+tr_f1, va_f1, va_rec = [], [], []
+for k, (a, b) in enumerate(cv.split(X_tr, y_tr)):
+    tv, m = fit_lstm(X_tr.iloc[a], y_tr.iloc[a], SEED + k)
+    tr_f1.append(f1_score(y_tr.iloc[a], predict_lstm(tv, m, X_tr.iloc[a]), average="macro"))
+    pb = predict_lstm(tv, m, X_tr.iloc[b])
+    va_f1.append(f1_score(y_tr.iloc[b], pb, average="macro"))
+    va_rec.append(recall_score(y_tr.iloc[b], pb, pos_label="ai"))
+    print(f"LSTM fold {k + 1}/5 done")
+
+t0 = time.perf_counter()
+tv_final, lstm_final = fit_lstm(X_tr, y_tr, SEED)
+fit_s = time.perf_counter() - t0
+test_preds["LSTM"] = predict_lstm(tv_final, lstm_final, X_te)
+p = test_preds["LSTM"]
+print("LSTM parameters:", lstm_final.count_params())
+
+q21_results.loc["LSTM"] = [np.mean(tr_f1), np.mean(va_f1), np.std(va_f1), np.mean(va_rec),
+                           accuracy_score(y_te, p), f1_score(y_te, p, average="macro"),
+                           balanced_accuracy_score(y_te, p), recall_score(y_te, p, pos_label="ai"), fit_s]
+q21_results = q21_results.round(3)
+print(q21_results.T.to_string())
+
+# %% Q2.1 (C) Results table and charts: all models vs the baselines
+all_results = pd.concat([baseline_results, q21_results])
+all_results.loc["NB + BoW", "CV val AI recall"] = sens.loc["with exclusions", "CV val AI recall"]
+all_results.loc["Dummy (most frequent)", "CV val AI recall"] = 0.0
+all_results = all_results.sort_values("CV val macro-F1", ascending=False)
+print(all_results.to_string())
+all_results.to_csv(TAB / "Q2_01_model_comparison.csv")
+
+nb_cv = baseline_results.loc["NB + BoW", "CV val macro-F1"]
+
+# 1. CV validation macro-F1 (the selection metric) with the baseline marked
+fig, ax = plt.subplots(figsize=(10, 5))
+order = all_results.index
+colours = ["tab:grey" if m in baseline_results.index else "tab:blue" for m in order]
+bars = ax.barh(order[::-1], all_results["CV val macro-F1"][::-1], color=colours[::-1],
+               xerr=all_results["CV val std"][::-1], capsize=3)
+ax.axvline(nb_cv, linestyle="--", color="tab:red", label=f"NB baseline ({nb_cv:.3f})")
+ax.bar_label(bars, fmt="%.3f", padding=12)
+ax.set_xlim(0, 1.05)
+ax.set_title("Cross-validated macro-F1 per model (grey = baselines, bars = +/- 1 std across folds)")
+ax.set_xlabel("Mean CV validation macro-F1")
+ax.legend(loc="lower right")
+savefig(fig, "Q2_01_cv_macro_f1")
+
+# 2. Learning vs generalisation: train vs validation per model
+fig, ax = plt.subplots(figsize=(11, 5))
+xpos = np.arange(len(order))
+ax.bar(xpos - 0.2, all_results["CV train macro-F1"], 0.4, label="CV train")
+ax.bar(xpos + 0.2, all_results["CV val macro-F1"], 0.4, label="CV validation")
+ax.set_xticks(xpos, order, rotation=30, ha="right")
+ax.set_ylim(0, 1.05)
+ax.set_title("Train vs validation macro-F1 (a large gap = overfitting)")
+ax.set_ylabel("Macro-F1")
+ax.legend()
+savefig(fig, "Q2_02_train_vs_validation")
+
+# 3. Confusion matrices on the test set (reported, not used for choosing)
+cm_models = ["NB + BoW"] + list(test_preds)
+cm_preds = {"NB + BoW": nb_pred, **test_preds}
+fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+for ax, name in zip(axes.ravel(), cm_models):
+    ConfusionMatrixDisplay.from_predictions(y_te, cm_preds[name], labels=["ai", "classical"],
+                                            ax=ax, colorbar=False)
+    ax.set_title(name)
+fig.suptitle("Test-set confusion matrices (rows = true class, columns = predicted)")
+savefig(fig, "Q2_03_confusion_matrices")
+
+# 4. Fit time (log scale: the models differ by about 100x)
+fig, ax = plt.subplots(figsize=(9, 4.5))
+ft = all_results["fit time (s)"].sort_values()
+ax.barh(ft.index, ft.values)
+ax.set_xscale("log")
+ax.set_title("Time to fit each model on the full training set (log scale)")
+ax.set_xlabel("Seconds (log scale)")
+savefig(fig, "Q2_04_fit_time")
