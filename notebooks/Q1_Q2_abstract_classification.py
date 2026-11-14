@@ -676,14 +676,16 @@ def build_lstm():
     model.compile(optimizer="adam", loss="binary_crossentropy")
     return model
 
-def fit_lstm(x_texts, y_labels, seed):
+#def fit_lstm(x_texts, y_labels, seed):
+def fit_lstm(x_texts, y_labels, seed, class_weight=None):
     keras.utils.set_random_seed(seed)
     tv = layers.TextVectorization(max_tokens=VOCAB, output_sequence_length=SEQ_LEN)
     tv.adapt(x_texts.values)                           # vocabulary from the training part only
     model = build_lstm()
     stop = keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True)
     model.fit(tv(x_texts.values), (y_labels == "ai").astype(int).values, epochs=40, batch_size=32,
-              validation_split=0.15, callbacks=[stop], verbose=0)
+#              validation_split=0.15, callbacks=[stop], verbose=0)
+              validation_split=0.15, callbacks=[stop], verbose=0, class_weight=class_weight)
     return tv, model
 
 def predict_lstm(tv, model, x_texts):
@@ -768,3 +770,181 @@ ax.set_xscale("log")
 ax.set_title("Time to fit each model on the full training set (log scale)")
 ax.set_xlabel("Seconds (log scale)")
 savefig(fig, "Q2_04_fit_time")
+
+# %% Q2.2 (A) The rules, written BEFORE any tuning is run
+# Rule 1 (which models are tuned): tune every model whose grid search fits the time budget;
+#         a model that does not fit gets ONE targeted fix for its diagnosed weakness instead.
+# Rule 2 (which tuned model is final): highest tuned CV macro-F1. Models within TIE_MARGIN of the best
+#         are treated as tied and separated by TIE_BREAK, in order.
+# TIE_MARGIN is fixed: it is only revisited if all seven models tie.
+from sklearn.model_selection import GridSearchCV
+
+TIME_BUDGET_S = 300            # 5 minutes per model
+TIE_MARGIN    = 0.01           # smaller than every model's fold std (~0.015-0.04), so a smaller gap is noise
+TIE_BREAK     = ["gives probabilities", "lower fold std", "higher CV AI recall", "faster fit"]
+
+def feature_grid(extra):
+    # Same feature options for every model: counts or TF-IDF, unigrams or uni+bigrams, min_df 1 or 2
+    common = {"v__ngram_range": [(1, 1), (1, 2)], "v__min_df": [1, 2], **extra}
+    return [{"v": [CountVectorizer()], **common},
+            {"v": [TfidfVectorizer()], "v__sublinear_tf": [False, True], **common}]
+
+grids = {
+    "Complement NB":       feature_grid({"m__alpha": [0.01, 0.03, 0.1, 0.3, 1.0]}),
+    "Logistic regression": feature_grid({"m__C": [0.1, 1, 10, 100, 300, 1000], "m__class_weight": [None, "balanced"]}),
+    "LinearSVC":           feature_grid({"m__C": [0.1, 0.5, 1, 5, 10, 20], "m__class_weight": [None, "balanced"]}),
+    "Random Forest":       feature_grid({"m__max_features": ["sqrt", "log2"], "m__min_samples_leaf": [1, 2],
+                                         "m__class_weight": [None, "balanced"]}),
+    "KNN":                 feature_grid({"m__n_neighbors": [3, 5, 11, 21, 31], "m__weights": ["uniform", "distance"]}),
+    "MLP":                 feature_grid({"m__alpha": [1e-4, 1e-3, 1e-2], "m__hidden_layer_sizes": [(50,), (100,)]}),
+}
+tunable_models = {
+    "Complement NB": ComplementNB(), "Logistic regression": LogisticRegression(max_iter=3000),
+    "LinearSVC": LinearSVC(max_iter=20000), "Random Forest": RandomForestClassifier(random_state=SEED, n_jobs=-1),
+    "KNN": KNeighborsClassifier(), "MLP": MLPClassifier(random_state=SEED, max_iter=300),
+}
+
+def n_combos(grid):
+    total = 0
+    for sub in grid:
+        n = 1
+        for values in sub.values():
+            n *= len(values)
+        total += n
+    return total
+
+# %% Q2.2 (B) Test the rules against every model, BEFORE tuning
+LSTM_GRID_SIZE = 12   # e.g. 3 layer sizes x 2 class weightings x 2 learning rates - the smallest sensible LSTM grid
+rule_tests = []
+for name in list(tunable_models) + ["LSTM"]:
+    size = LSTM_GRID_SIZE if name == "LSTM" else n_combos(grids[name])
+    est_s = q21_results.loc[name, "fit time (s)"] * size * 5      # one fit x combinations x 5 folds (sequential, so conservative)
+    has_proba = True if name == "LSTM" else hasattr(tunable_models[name], "predict_proba")
+    rule_tests.append({"model": name, "grid combinations": size, "est. search time (s)": round(est_s),
+                       "within 5-min budget": est_s <= TIME_BUDGET_S, "gives probabilities": has_proba})
+rule_tests = pd.DataFrame(rule_tests).set_index("model")
+rule_tests["Rule 1 decision"] = np.where(rule_tests["within 5-min budget"], "full grid search", "one targeted fix")
+print(rule_tests.to_string())
+rule_tests.to_csv(TAB / "Q2_02_rule_tests.csv")
+
+# %% Q2.2 (C) Run the grid searches for every model that passed Rule 1
+tuned = {}
+for name in rule_tests.index[rule_tests["within 5-min budget"]]:
+    t0 = time.perf_counter()
+    gs = GridSearchCV(Pipeline([("v", TfidfVectorizer()), ("m", tunable_models[name])]), grids[name],
+                      scoring=scoring, refit="f1_macro", cv=cv, n_jobs=-1, return_train_score=True)
+    gs.fit(X_tr, y_tr)                                   # training data only - the test set is not touched
+    tuned[name] = gs
+    print(f"{name:20s} {n_combos(grids[name]):4d} combos in {time.perf_counter() - t0:6.1f} s | "
+          f"best CV macro-F1 {gs.best_score_:.3f} | "
+          f"{ {k: (type(v).__name__ if k == 'v' else v) for k, v in gs.best_params_.items()} }")
+
+# %% Q2.2 (D) Targeted fixes for the models that failed Rule 1's time budget
+# MLP - diagnosed weakness: overfitting (CV train 1.000 vs validation 0.817). Fix: early stopping.
+mlp_fix = Pipeline([("v", tfidf()), ("m", MLPClassifier(random_state=SEED, max_iter=300, early_stopping=True))])
+r = cross_validate(mlp_fix, X_tr, y_tr, cv=cv, scoring=scoring, return_train_score=True)
+fixes = {"MLP": {"fix": "early_stopping=True", "CV train macro-F1": r["train_f1_macro"].mean(),
+                 "CV macro-F1": r["test_f1_macro"].mean(), "CV std": r["test_f1_macro"].std(),
+                 "CV AI recall": r["test_ai_recall"].mean()}}
+print("MLP fix done")
+
+# LSTM - diagnosed weakness: collapses to the majority class (AI recall 0.222). Fix: class weights.
+tr_f1, va_f1, va_rec = [], [], []
+for k, (a, b) in enumerate(cv.split(X_tr, y_tr)):
+    ya = y_tr.iloc[a]
+    cw = {0: 1.0, 1: (ya == "classical").sum() / (ya == "ai").sum()}   # weight AI by the class ratio in this fold
+    tv, m = fit_lstm(X_tr.iloc[a], ya, SEED + k, class_weight=cw)
+    tr_f1.append(f1_score(ya, predict_lstm(tv, m, X_tr.iloc[a]), average="macro"))
+    pb = predict_lstm(tv, m, X_tr.iloc[b])
+    va_f1.append(f1_score(y_tr.iloc[b], pb, average="macro"))
+    va_rec.append(recall_score(y_tr.iloc[b], pb, pos_label="ai"))
+    print(f"LSTM (class-weighted) fold {k + 1}/5 done")
+fixes["LSTM"] = {"fix": "class weights", "CV train macro-F1": np.mean(tr_f1), "CV macro-F1": np.mean(va_f1),
+                 "CV std": np.std(va_f1), "CV AI recall": np.mean(va_rec)}
+
+# %% Q2.2 (E) Before vs after for all seven, then apply Rule 2 to choose the final model
+rows = []
+for name, gs in tuned.items():
+    i = gs.best_index_
+    rows.append({"model": name, "enhancement": "grid search",
+                 "default CV macro-F1": q21_results.loc[name, "CV val macro-F1"],
+                 "enhanced CV macro-F1": gs.best_score_, "enhanced CV std": gs.cv_results_["std_test_f1_macro"][i],
+                 "enhanced CV AI recall": gs.cv_results_["mean_test_ai_recall"][i],
+                 "enhanced CV train macro-F1": gs.cv_results_["mean_train_f1_macro"][i],
+                 "fit time (s)": gs.refit_time_, "gives probabilities": rule_tests.loc[name, "gives probabilities"]})
+for name, f in fixes.items():
+    rows.append({"model": name, "enhancement": f["fix"],
+                 "default CV macro-F1": q21_results.loc[name, "CV val macro-F1"],
+                 "enhanced CV macro-F1": f["CV macro-F1"], "enhanced CV std": f["CV std"],
+                 "enhanced CV AI recall": f["CV AI recall"], "enhanced CV train macro-F1": f["CV train macro-F1"],
+                 "fit time (s)": q21_results.loc[name, "fit time (s)"], "gives probabilities": True})
+enhanced = pd.DataFrame(rows).set_index("model")
+enhanced["gain"] = enhanced["enhanced CV macro-F1"] - enhanced["default CV macro-F1"]
+enhanced["beats NB baseline (0.843)"] = enhanced["enhanced CV macro-F1"] > nb_cv
+enhanced = enhanced.sort_values("enhanced CV macro-F1", ascending=False)
+print(enhanced.round(3).to_string())
+enhanced.round(4).to_csv(TAB / "Q2_03_enhanced_vs_default.csv")
+
+# Rule 2
+best = enhanced["enhanced CV macro-F1"].max()
+tied = enhanced[enhanced["enhanced CV macro-F1"] >= best - TIE_MARGIN].copy()
+print(f"\nBest enhanced CV macro-F1 = {best:.4f}; tied (within {TIE_MARGIN}):", list(tied.index))
+ranked = tied.sort_values(["gives probabilities", "enhanced CV std", "enhanced CV AI recall", "fit time (s)"],
+                          ascending=[False, True, False, True])          # TIE_BREAK order, applied in sequence
+print(ranked[["enhanced CV macro-F1", "gives probabilities", "enhanced CV std",
+              "enhanced CV AI recall", "fit time (s)"]].round(4).to_string())
+final_name = ranked.index[0]
+print("\nFinal model by Rule 2:", final_name)
+
+# %% Q2.2 (F) Charts: default vs enhanced for all seven, and the tuning heatmap for the final model
+fig, ax = plt.subplots(figsize=(11, 5))
+xpos = np.arange(len(enhanced))
+ax.bar(xpos - 0.2, enhanced["default CV macro-F1"], 0.4, label="default (Q2.1)")
+ax.bar(xpos + 0.2, enhanced["enhanced CV macro-F1"], 0.4, label="enhanced (Q2.2)",
+       yerr=enhanced["enhanced CV std"], capsize=3)
+ax.axhline(nb_cv, linestyle="--", color="tab:red", label=f"NB baseline ({nb_cv:.3f})")
+ax.set_xticks(xpos, enhanced.index, rotation=30, ha="right")
+ax.set_ylim(0, 1.1)
+ax.set_ylabel("CV macro-F1")
+ax.set_title("Default vs enhanced CV macro-F1 per model (error bars = +/- 1 std across folds)")
+ax.legend(loc="upper center", ncol=3)
+savefig(fig, "Q2_05_default_vs_enhanced")
+
+res = pd.DataFrame(tuned[final_name].cv_results_)
+res["class_weight"] = res["param_m__class_weight"].fillna("None")   # pandas stores None as NaN
+heat = res.pivot_table(index="class_weight", columns="param_m__C", values="mean_test_f1_macro", aggfunc="max")
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.imshow(heat.values, cmap="viridis", vmin=0.6, vmax=0.9)
+ax.set_xticks(range(heat.shape[1]), heat.columns)
+ax.set_yticks(range(heat.shape[0]), heat.index)
+for i in range(heat.shape[0]):
+    for j in range(heat.shape[1]):
+        ax.text(j, i, f"{heat.values[i, j]:.3f}", ha="center", va="center", color="white")
+ax.set_title(f"{final_name}: best CV macro-F1 for each C and class_weight")
+ax.set_xlabel("C (higher = weaker regularisation)")
+ax.set_ylabel("class_weight")
+savefig(fig, "Q2_06_tuning_heatmap")
+
+# %% Q2.2 (G) The ONE test-set evaluation of the final model
+final_model = tuned[final_name].best_estimator_       # already refit on all 895 training abstracts
+final_pred = final_model.predict(X_te)
+default_pred = test_preds[final_name]
+test_compare = pd.DataFrame({
+    f"{final_name} default": [f1_score(y_te, default_pred, average="macro"), balanced_accuracy_score(y_te, default_pred),
+                              recall_score(y_te, default_pred, pos_label="ai")],
+    f"{final_name} enhanced (final)": [f1_score(y_te, final_pred, average="macro"), balanced_accuracy_score(y_te, final_pred),
+                              recall_score(y_te, final_pred, pos_label="ai")],
+    "NB baseline": [f1_score(y_te, nb_pred, average="macro"), balanced_accuracy_score(y_te, nb_pred),
+                    recall_score(y_te, nb_pred, pos_label="ai")],
+}, index=["test macro-F1", "test balanced acc.", "test AI recall"]).round(3)
+print(test_compare.to_string())
+test_compare.to_csv(TAB / "Q2_04_final_test.csv")
+print(classification_report(y_te, final_pred, digits=3))
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
+for ax, (title, pred) in zip(axes, [("NB baseline", nb_pred), (f"{final_name} default", default_pred),
+                                    (f"{final_name} enhanced (final)", final_pred)]):
+    ConfusionMatrixDisplay.from_predictions(y_te, pred, labels=["ai", "classical"], ax=ax, colorbar=False)
+    ax.set_title(title)
+fig.suptitle("Test set: baseline vs default vs enhanced final model")
+savefig(fig, "Q2_07_final_confusion_matrices")

@@ -1,0 +1,8 @@
+model,grid combinations,est. search time (s),within 5-min budget,gives probabilities,Rule 1 decision
+Complement NB,60,23,True,True,full grid search
+Logistic regression,144,69,True,True,full grid search
+LinearSVC,144,55,True,False,full grid search
+Random Forest,96,82,True,True,full grid search
+KNN,120,45,True,True,full grid search
+MLP,72,3330,False,True,one targeted fix
+LSTM,12,356,False,True,one targeted fix
