@@ -1,8 +1,8 @@
 model,enhancement,default CV macro-F1,enhanced CV macro-F1,enhanced CV std,enhanced CV AI recall,enhanced CV train macro-F1,fit time (s),gives probabilities,gain,beats NB baseline (0.843)
-Random Forest,grid search,0.821,0.8688,0.0266,0.6902,1.0,0.1683,True,0.0478,True
-Logistic regression,grid search,0.623,0.8656,0.0145,0.6578,1.0,0.1107,True,0.2426,True
-LinearSVC,grid search,0.833,0.8656,0.0207,0.6688,1.0,0.1085,False,0.0326,True
-Complement NB,grid search,0.65,0.8484,0.0145,0.7498,0.9722,0.0403,True,0.1984,True
-KNN,grid search,0.794,0.8417,0.0229,0.6796,1.0,0.0311,True,0.0477,False
-LSTM,class weights,0.607,0.8171,0.0227,0.6851,0.9576,5.927,True,0.2101,False
-MLP,early_stopping=True,0.817,0.7317,0.1088,0.4059,0.9291,9.25,True,-0.0853,False
+Random Forest,grid search,0.821,0.8688,0.0266,0.6902,1.0,0.1841,True,0.0478,True
+Logistic regression,grid search,0.623,0.8656,0.0145,0.6578,1.0,0.1026,True,0.2426,True
+LinearSVC,grid search,0.833,0.8656,0.0207,0.6688,1.0,0.1176,False,0.0326,True
+Complement NB,grid search,0.65,0.8484,0.0145,0.7498,0.9722,0.0356,True,0.1984,True
+KNN,grid search,0.794,0.8417,0.0229,0.6796,1.0,0.0313,True,0.0477,False
+LSTM,class weights,0.607,0.8171,0.0227,0.6851,0.9576,5.932,True,0.2101,False
+MLP,early_stopping=True,0.817,0.7317,0.1088,0.4059,0.9291,9.496,True,-0.0853,False

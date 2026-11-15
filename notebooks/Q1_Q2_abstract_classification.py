@@ -359,7 +359,7 @@ NOISE_PATTERNS = {
     "section headings":     r"\b(?:Purpose|Findings|Background|Abstract)\s*[:\-.]",
     "HTML tags/entities":   r"<[^>]+>|&[a-zA-Z]+;",
     "URLs / e-mails":       r"http\S+|www\.\S+|\S+@\S+",
-    "unicode dashes":       r"[\u2010-\u2015\u2212]",
+    "unicode dashes":       "[\u2010-\u2015\u2212]",
     "digits":               r"\d",
     "punctuation":          r"[^\w\s]",
 }
@@ -948,3 +948,27 @@ for ax, (title, pred) in zip(axes, [("NB baseline", nb_pred), (f"{final_name} de
     ax.set_title(title)
 fig.suptitle("Test set: baseline vs default vs enhanced final model")
 savefig(fig, "Q2_07_final_confusion_matrices")
+
+# %% Q2.3 (A) Deployment model: the final pipeline WITH the cleaning step built in
+import shutil, joblib
+from sklearn.base import clone
+from sklearn.preprocessing import FunctionTransformer
+
+# Same vectoriser + model settings Rule 2 chose, with clean_many in front, so the app can take raw text
+deploy_model = Pipeline([("clean", FunctionTransformer(clean_many))] + clone(final_model).steps)
+
+X_tr_raw = df_model.loc[X_tr.index, "Abstract"]       # the SAME 895 training abstracts, before cleaning
+X_te_raw = df_model.loc[X_te.index, "Abstract"]
+deploy_model.fit(X_tr_raw, y_tr)
+
+# Check: on the raw test abstracts, the deployed pipeline must give exactly the predictions evaluated in Q2.2 (G)
+deploy_pred = deploy_model.predict(X_te_raw)
+print("Deployed pipeline matches the evaluated model on all", len(X_te), "test abstracts:",
+      bool((deploy_pred == final_pred).all()))
+
+DEPLOY = BASE / "deployment"
+DEPLOY.mkdir(exist_ok=True)
+joblib.dump(deploy_model, DEPLOY / "model.joblib")
+shutil.copy(BASE / "src" / "text_utils.py", DEPLOY / "text_utils.py")   # the model needs it to load
+print("Saved:", DEPLOY / "model.joblib", f"({(DEPLOY / 'model.joblib').stat().st_size / 1e6:.1f} MB)")
+print("Classes in model order:", list(deploy_model.classes_))
