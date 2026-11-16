@@ -3,4 +3,5 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .spyproject/
-docs/*brief*.docxoutB.txt
+docs/*brief*.docx
+outB.txt
