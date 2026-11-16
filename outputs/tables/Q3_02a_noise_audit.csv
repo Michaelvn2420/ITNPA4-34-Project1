@@ -1,0 +1,16 @@
+,article_1,article_2,article_3,article_4,article_5
+"footnote digits, LOOSE  ([.,;:)] then 1-2 digits)",8,1,1,4,0
+"footnote digits, STRICT (.1 / ).2 / .3, 4)",8,0,1,0,0
+"citation in brackets  (Smith, 2004; Lee 1999)",58,31,47,32,95
+citation in text  Smith (2004),4,4,15,7,24
+line-end hyphen (word-<newline>word),0,0,0,0,0
+URL,0,0,0,0,0
+e-mail,0,1,0,0,0
+section number at line start (41.2.1),0,0,10,0,0
+running head / page number (1100 • NAME),4,5,5,0,14
+figure / table caption,0,0,3,1,1
+(c) / Copyright,0,0,0,2,0
+blank lines,0,0,0,53,0
+bullet / arrow characters,0,0,8,0,0
+"control / invisible characters (\x01, BOM, ...)",0,0,17,2,0
+curly quotes and dashes,68,64,76,225,50

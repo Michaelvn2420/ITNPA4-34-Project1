@@ -1,0 +1,51 @@
+step,article_id,words,sentences,fragments_lt5
+0 raw file,1,5602,150,0
+0 raw file,2,2416,58,1
+0 raw file,3,3828,149,0
+0 raw file,4,5922,173,0
+0 raw file,5,4027,170,9
+1 after duplicate removal,1,2801,75,0
+1 after duplicate removal,2,2416,58,1
+1 after duplicate removal,3,3828,149,0
+1 after duplicate removal,4,5922,173,0
+1 after duplicate removal,5,4027,170,9
+2 after front matter and abstract removed,1,2633,71,0
+2 after front matter and abstract removed,2,2238,53,1
+2 after front matter and abstract removed,3,3800,146,0
+2 after front matter and abstract removed,4,5645,164,0
+2 after front matter and abstract removed,5,3890,163,9
+3 after page furniture,1,2627,71,0
+3 after page furniture,2,2202,52,1
+3 after page furniture,3,3674,142,0
+3 after page furniture,4,5620,164,0
+3 after page furniture,5,3807,160,7
+4 after invisible characters,1,2627,71,0
+4 after invisible characters,2,2202,52,1
+4 after invisible characters,3,3657,142,0
+4 after invisible characters,4,5620,164,0
+4 after invisible characters,5,3807,160,7
+5 after footnotes,1,2626,75,0
+5 after footnotes,2,2202,52,1
+5 after footnotes,3,3657,143,0
+5 after footnotes,4,5620,164,0
+5 after footnotes,5,3807,160,7
+6 after headings,1,2609,75,0
+6 after headings,2,2191,52,1
+6 after headings,3,3603,147,0
+6 after headings,4,5574,164,0
+6 after headings,5,3764,160,7
+7 after joining lines,1,2609,75,0
+7 after joining lines,2,2191,52,1
+7 after joining lines,3,3603,147,0
+7 after joining lines,4,5574,164,0
+7 after joining lines,5,3764,160,7
+8 after citations,1,2457,74,0
+8 after citations,2,2019,52,0
+8 after citations,3,3454,149,0
+8 after citations,4,5435,166,0
+8 after citations,5,3442,151,2
+9 after quotes and dashes,1,2458,74,0
+9 after quotes and dashes,2,2019,52,0
+9 after quotes and dashes,3,3454,149,0
+9 after quotes and dashes,4,5447,168,0
+9 after quotes and dashes,5,3447,151,2

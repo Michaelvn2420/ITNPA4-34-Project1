@@ -1,0 +1,13 @@
+# Q3 / Q4 extras (summarisation, topic modelling). Separate venv: itnpa_q3
+numpy==2.4.6
+pandas==3.1.1
+scipy==1.17.1
+scikit-learn==1.9.1
+nltk==3.10.4
+matplotlib==3.11.2
+gensim==4.4.0
+pyLDAvis==3.4.1
+networkx==3.6.1
+wordcloud==1.9.6
+transformers==4.57.6
+torch==2.9.1
