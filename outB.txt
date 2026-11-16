@@ -1,0 +1,504 @@
+Project folder: C:\COURSEWORK\ITNPA4-34\PROJECT_1\ITNPA4-34-Project1
+Python 3.11.9 | pandas 3.1.1 | scikit-learn 1.9.1 | nltk 3.10.4
+Shape (rows, columns): (1138, 3)
+
+Column data types:
+DOI         str
+Abstract    str
+Label       str
+dtype: object
+
+First 5 rows:
+                          DOI  ...      Label
+0        10.1155/2021/1071145  ...         ai
+1  10.1007/s43546-022-00384-2  ...         ai
+2            10.1002/for.2667  ...  classical
+3  10.1007/s42973-021-00091-x  ...  classical
+4   10.1007/s40258-012-0003-z  ...  classical
+
+[5 rows x 3 columns]
+
+Missing values per column:
+DOI         4
+Abstract    0
+Label       0
+dtype: int64
+
+Class counts:
+Label
+classical    900
+ai           238
+Name: count, dtype: int64
+
+Class proportions:
+Label
+classical    0.791
+ai           0.209
+Name: proportion, dtype: float64
+                          DOI                                                     Abstract      Label
+0        10.1155/2021/1071145  Forward-looking forecasting of the inflation rate could ...         ai
+1  10.1007/s43546-022-00384-2  Our study examined the disaggregation of inflation compo...         ai
+2            10.1002/for.2667  This paper develops a dynamic factor model that uses eur...  classical
+3  10.1007/s42973-021-00091-x  In this paper, I use a simple SIR Macro model to examine...  classical
+4   10.1007/s40258-012-0003-z  BackgroundGame theory is useful for identifying conditio...  classical
+Duplicated Abstracts: 13
+Duplicates with conflicting labels: 0
+Duplicate Digital Object Identifiers, DOIs, (non-missing): 0
+Missing DOIs: 4
+
+The duplicated rows:
+                                   DOI      Label
+532               10.2139/ssrn.1113719  classical
+533     10.1016/j.ejpoleco.2008.05.002  classical
+690               10.2139/ssrn.1993335  classical
+692      10.1016/j.jeconom.2013.10.012  classical
+68            10.48550/arxiv.1102.5405  classical
+77                10.2139/ssrn.1761545  classical
+225               10.2139/ssrn.2636234  classical
+226   10.1016/j.euroecorev.2019.05.009  classical
+170                                NaN         ai
+1040                               NaN         ai
+Rows: 1138 -> 1125 (removed 13)
+Duplicates remaining: 0
+
+Removed rows (DOI, Label):
+                                   DOI      Label
+77                10.2139/ssrn.1761545  classical
+94                10.2139/ssrn.3290745  classical
+226   10.1016/j.euroecorev.2019.05.009  classical
+341           10.48550/arxiv.1310.1786  classical
+533     10.1016/j.ejpoleco.2008.05.002  classical
+538          10.48550/arxiv.2302.13999         ai
+626                 10.52903/wp2022302  classical
+692      10.1016/j.jeconom.2013.10.012  classical
+695         10.1016/j.jedc.2014.04.013  classical
+930               10.2139/ssrn.2567014  classical
+955      10.1016/j.econmod.2016.12.025  classical
+1040                               NaN         ai
+1041                               NaN         ai
+
+Class counts after removal:
+           before  after
+Label                   
+classical     900    890
+ai            238    235
+       n_chars  n_words_raw
+count   1125.0       1125.0
+mean    1147.4        171.6
+std      689.6        103.9
+min      113.0         16.0
+25%      780.0        116.0
+50%     1022.0        152.0
+75%     1334.0        201.0
+max    14076.0       2075.0
+
+Median words per abstract by class:
+Label
+ai           178.0
+classical    147.5
+Name: n_words_raw, dtype: float64
+
+Shortest 5:
+     n_chars      Label                            DOI
+38       113         ai  10.48550/arxiv.hep-ph/0111365
+548      165  classical  10.1016/s0169-2070(02)00060-2
+88       233  classical              10.1080/758518039
+400      241  classical  10.1016/j.econlet.2021.109877
+514      306  classical    10.1007/978-1-349-20460-1_3
+
+Longest 5:
+      n_chars      Label                               DOI
+1122    14076  classical            10.1287/mnsc.2013.1812
+1124     7711  classical         10.1017/s1365100504030202
+1106     5191         ai  10.17261/pressacademia.2023.1702
+1078     5132  classical                  10.2118/11315-pa
+1123     4496  classical                  10.2118/22022-pa
+
+SHORTEST abstract:
+ We review the prediction of inflation and the constraints on inflationary models coming from recent observations.
+
+LONGEST abstract (first 1500 chars):
+ Francesca Gino, Erin L. Krupka, Roberto A. Weber Does the option for regulatory oversight change behavior? Although monitoring and regulation can be used to combat socially costly unethical conduct, their intended targets can often avoid regulation or hide their behavior. This surrenders at least part of the effectiveness of regulatory policies to firms' and individuals' decisions to voluntarily submit to regulation. The authors study individuals' decisions to avoid monitoring or regulation and thus enhance their ability to engage in unethical conduct. They conduct a laboratory experiment in which participants engage in a competitive task and can decide between having the opportunity to misreport their performance and having their performance verified by an external monitor. To study the effect of social factors on the willingness to be subject to monitoring, the authors vary whether participants make this decision simultaneously with others or sequentially, as well as whether the decision is private or public. The insight for management: The opportunity to avoid being submitted to regulation produces more unethical conduct than situations in which regulation is either exogenously imposed or entirely absent.    Elena Obukhova, George Lan Do job seekers benefit from contacts? Although it is intuitively plausible that a job seeker benefits by using contacts in her job search, researchers have been plagued by theoretical disagreements and inconclusive empirical evidence. Single-
+Theme  0 (149 abstracts): policy, monetary, fiscal, output, shocks, central, bank, economy, targeting, target
+Theme  1 (244 abstracts): models, forecasting, time, methods, series, data, forecast, method, prediction, based
+Theme  2 (112 abstracts): rate, exchange, rates, currency, foreign, data, dollar, trade, real, results
+Theme  3 (150 abstracts): price, prices, oil, gold, cpi, consumer, index, changes, crude, data
+Theme  4 (111 abstracts): forecasts, expectations, forecasters, survey, forecast, uncertainty, point, professional, density, information
+Theme  5 (176 abstracts): stock, economic, market, financial, factors, growth, study, risk, development, prediction
+Theme  6 (103 abstracts): term, long, real, short, rates, run, structure, nominal, yield, expected
+Theme  7 ( 80 abstracts): unemployment, wage, labor, force, phillips, curve, relationship, rate, growth, wages
+Label   ai  classical
+theme                
+0        1        148
+1      100        144
+2       18         94
+3       40        110
+4       19         92
+5       49        127
+6        6         97
+7        2         78
+Label                                     ai  classical  total
+0: policy, monetary, fiscal                1        148    149
+1: models, forecasting, time             100        144    244
+2: rate, exchange, rates                  18         94    112
+3: price, prices, oil                     40        110    150
+4: forecasts, expectations, forecasters   19         92    111
+5: stock, economic, market                49        127    176
+6: term, long, real                        6         97    103
+7: unemployment, wage, labor               2         78     80
+
+===== Theme 0 =====
+ - In this paper, I use a simple SIR Macro model to examine Japan’s soft lockdown policies in 2021 under the COVID-19 crisis. As real-time research, this paper consists of two parts written during two di
+ - In 1998 the Czech National Bank (CNB) changed its monetary policy framework and started to target inflation. The article discusses main theoretical aspects of inflation targeting and some practical pr
+ - The impact of inflation on Relative Price Variability (RPV) generates an important channel for real effects of inflation. This article provides first evidence on the empirical relation between inflati
+
+===== Theme 1 =====
+ - Forward-looking forecasting of the inflation rate could help the central bank and other government departments to better use monetary policy to stabilize prices and prevent the impact of inflation on 
+ - Our study examined the disaggregation of inflation components in Nigeria using the stacked ensemble approach, a machine learning algorithm capable of compensating the weakness of an ensemble and a bas
+ - This paper develops a dynamic factor model that uses euro area country-specific information on output and inflation to estimate an area-wide measure of the output gap. Our model assumes that output an
+
+===== Theme 2 =====
+ - The empirical "gravity" equation is extremely successful in explaining bilateral trade. This paper shows how a multi-country model of specialization and costly trade (i.e. a microfounded gravity model
+ - A country's inflation rate and exchange rate forms a two-way relationship, whereby the former can affect the latter and vice versa. However, past researches have proven that the exchange rate affects 
+ - If countries specialize in imperfectly substitutable goods, trade costs increase the share of expenditure devoted to domestic output, reducing the exposure of consumer price inflation to exchange rate
+
+===== Theme 3 =====
+ - BackgroundGame theory is useful for identifying conditions under which individual stakeholders in a collective action problem interact in ways that are more cooperative and in the best interest of the
+ - BACKGROUND: Between 2010 and 2020, the New Zealand (NZ) Government increased tobacco excise tax by inflation plus 10% each year. We reviewed market structure changes and examined whether NZ tobacco co
+ - Reserve Bank of New Zealand (RBNZ) is one of many inflation-targeting central banks. The effective conduct of monetary policy requires the capacity to make accurate short and medium term predictions a
+
+===== Theme 4 =====
+ - Expectations of inflation play a critical role in the process of price setting in the market. Central banks closely follow developments in inflation expectations to implement a successful monetary pol
+ - The main aim of this study is to evaluate and improve the Survey of Professional Forecasters (S.P.F.) quarterly inflation rate forecasts. According to the Diebold–Mariano test, on the horizon 1991:Q1–
+ - Much research studies US inflation history with a trend‐cycle model with unobserved components, where the trend may be viewed as the Fed's evolving inflation target or long‐horizon expected inflation.
+
+===== Theme 5 =====
+ - Climate change has become intertwined with the global economy. Here, we describe the contribution of inertia to future trends. Drawing from thermodynamic principles, and using 38 years of available st
+ - The purpose of the research is to know whether inflation influences economic growth or economic growth influence inflation and to know the final prediction error of long - term equilibrium relationshi
+ - Inflation is one of the main issues affecting the world economy right now, necessitating the accurate inflation prediction for the development of tools and policies by the monetary authorities to prev
+
+===== Theme 6 =====
+ - The Fisher effect maintains that movements in short-term interest rates largely reflect changes in expected inflation. Since expected inflation is subject to error, we ask whether interest rates move 
+ - This paper tests the implication of the theory of optimal seigniorage that over time higher tax rates are associated with higher inflation rates and higher nominal interest rates. In particular, the s
+ - We present a simple model with financial frictions where inflation increases the cost faced by firms holding liquid assets to hedge risky production against expenditure shocks. Inflation tilts firms’ 
+
+===== Theme 7 =====
+ - For decades, Western societies have experienced educational expansion accompanied by an upgrading of skills. The literature provides competing hypotheses on the consequences for educational wage retur
+ - EBRI'S BIANNUAL POLICY FORUM: This Issue Brief summarizes presentations at EBRI's 65th biannual policy forum, held in Washington, DC, on Dec. 10, 2009, on the topic, "Employers, Workers, and the Futur
+ - Potential links between inflation and unemployment in Canada have been examined. No consistent Phillips curve has been found likely due to strong changes in monetary policy of the Bank of Canada. Howe
+
+--- row 248 | ai | weight 0.015 | 10.48550/arxiv.1401.2926
+Inflation can be parameterized by means of truncated flow equations. In this "horizon-flow" setup, generic results have been obtained, such as typical values for $r/(1-n_\mathrm{S})$. They are sometimes referred to as intrinsic features of inflation 
+
+--- row 318 | classical | weight 0.016 | 10.2139/ssrn.1019580
+This paper exploits a unique natural experiment - Cornell University's 1996 decision to publish course median grades online - to examine the effect of grade information on course selection and grade inflation. We model students' course selection as d
+
+--- row 625 | classical | weight 0.021 | 10.1111/j.1465-7295.1989.tb00790.x
+It is widely believed that monetary aggregates have failed to predict economic performance over 1983‐87. This paper observes that the traditional definition of money (M1 lessother checkable deposits, or M1A) shows no evidence of structural change, an
+
+--- row 691 | classical | weight 0.021 | 10.1016/s0304-3878(00)00111-5
+This paper views the budgetary process as a limited contingencies contract between the Treasury and the ministers, allowing a minister to ask for budget revisions. Upon costly verification by the Treasury, the minister may obtain extra funds. For sig
+
+--- row 128 | classical | weight 0.024 | 10.1111/jori.12434
+Ignoring the effects of inflation in retirement planning can have severe consequences for an individual's future financial well‐being. Yet, many pension funds do not communicate inflation‐related information, presumably for the fear of reduced contri
+
+--- row 273 | classical | weight 0.025 | 10.1111/0008-4085.00089
+In this paper we evaluate the dynamic inconsistency argument put forth by Kydland and Prescott (1977) and Barro and Gordon (1983) as an explanation for differences in the average inflation experience across OECD countries. The focus is on the empiric
+
+--- row 927 | classical | weight 0.026 | 10.2139/ssrn.3374813
+Problem definition: We study the impact of inventory allocation mechanism on the ordering behavior of retailers serviced from a central distribution center. Based on the allocation scheme employed by the distribution center, retailers may have an inc
+
+--- row 735 | classical | weight 0.026 | 10.1002/for.2969
+American popular and Electoral College presidential elections are forecast for 2020 and 2024, employing auto‐regressive time series and cross‐section probit models. Predictions are between the Republican and Democratic parties, not named persons. Yea
+
+--- row 699 | classical | weight 0.026 | 10.2139/ssrn.2831045
+Many firms that produce expert product reviews have a vested interest in increased consumption of the products they review. The classic example is the Michelin Guide, which reviews restaurants, originally conceived to stimulate usage of automobiles a
+
+--- row 98 | classical | weight 0.027 | 10.1016/j.econmod.2010.02.011
+In this paper we examine the dynamics of the link between inequality and inflation from a political economy perspective. We consider a simple dynamic general equilibrium model in which agents vote over the desired inflation rate in each period, and i
+
+--- row 1120 | classical | weight 0.028 | 10.1007/bf00123887
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794829756.814065   23392 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794829761.683131   23392 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+E0000 00:00:1794829764.422142   23392 util.cc:131] oneDNN supports DT_BOOL only on platforms with AVX-512. Falling back to the default Eigen-based implementation if present.
+Concluding remarksWhile the final version of the 1986 Tax Reform Act retained budget funding of the IRS, the Senate proposal to finance spending from audit revenues represented a seriously debated alternative that continues to receive attention as a 
+
+--- row 726 | classical | weight 0.028 | 10.1287/mnsc.2022.4297
+Researchers have often attributed discrete messages such as ratings to a difference in preferences between sender and receiver. By extending a standard model of information transmission, we show that discreteness can also arise when preferences are i
+
+--- row 235 | classical | weight 0.031 | 10.1016/j.iref.2004.11.006
+I study the value to society of information about central bankers' preferences for inflation relative to output stabilization. I find that the value to society of information is only positive if bankers are “very” conservative. The reason is the foll
+
+--- row 442 | classical | weight 0.031 | 10.1016/0164-0704(93)90053-o
+This paper develops a political business cycle model based on partisanship and credibility arguments that explains the pre-electron behavior of inflation, output, and money growth. The approach taken is to introduce elections and a Mundell-Tobin effe
+
+--- row 456 | classical | weight 0.032 | 10.1111/jpet.12468
+In this paper, we reassess the link between corruption, economic growth, and inflation. To this end, we build an endogenous growth model with transaction costs in which a corruption sector allows households evading from taxation. Several results emer
+          label  words  repeated_closing_phrase  author_bylines
+938   classical    709                        0               0
+1078  classical    765                        0               0
+1106         ai    780                        0               0
+1122  classical   2075                       13              11
+1124  classical   1206                        0               0
+
+Rows meeting R1: [1122]
+Physics-subject abstracts: 6
+
+--- row 38 | ai | AI/ML terms: 0 | 10.48550/arxiv.hep-ph/0111365
+We review the prediction of inflation and the constraints on inflationary models coming from recent observations.
+
+--- row 151 | ai | AI/ML terms: 0 | 10.48550/arxiv.1606.05879
+We study the power spectra of f(R) inflation using a new technique in which the norm-squared of the mode functions is evolved. Our technique results in excellent analytic approximations for how the spectra depend upon the function $f(R)$. Although th
+
+--- row 245 | ai | AI/ML terms: 0 | 10.48550/arxiv.2108.10767
+Plateau inflation is an experimentally consistent framework in which the scale of inflation can be kept relatively low. Close to the edge of the plateau, scalar perturbations are subject to a strong tachyonic instability. Tachyonic preheating is real
+
+--- row 248 | ai | AI/ML terms: 0 | 10.48550/arxiv.1401.2926
+Inflation can be parameterized by means of truncated flow equations. In this "horizon-flow" setup, generic results have been obtained, such as typical values for $r/(1-n_\mathrm{S})$. They are sometimes referred to as intrinsic features of inflation 
+
+--- row 513 | classical | AI/ML terms: 0 | 10.1063/1.4734403
+We review the calculation of the primordial curvature spectrum generated during warm inflation, including shear viscous effects. The primordial spectrum is dominated by the thermal fluctuations of the radiation bath, sourced by the dissipative term o
+
+--- row 620 | ai | AI/ML terms: 0 | 10.48550/arxiv.1010.0055
+Large-scale clustering of highly biased tracers of large-scale structure has emerged as one of the best observational probes of primordial non-Gaussianity of the local type (i.e. f_{NL}^{local}). This type of non-Gaussianity can be generated in multi
+
+Rows meeting R2: [38, 151, 245, 248, 620]
+                 term  abstracts containing it  of which NOT flagged physics
+             inflaton                        3                             0
+              tachyon                        1                             0
+   inflationary model                        1                             0
+            slow-roll                        1                             0
+           primordial                        2                             0
+large-scale structure                        1                             0
+               f\(R\)                        1                             0
+         label                            DOI                            arxiv_page                          physics_terms_found
+38          ai  10.48550/arxiv.hep-ph/0111365  https://arxiv.org/abs/hep-ph/0111365                           inflationary model
+151         ai      10.48550/arxiv.1606.05879      https://arxiv.org/abs/1606.05879                                         f(r)
+245         ai      10.48550/arxiv.2108.10767      https://arxiv.org/abs/2108.10767                            inflaton, tachyon
+248         ai       10.48550/arxiv.1401.2926       https://arxiv.org/abs/1401.2926                                    slow-roll
+513  classical              10.1063/1.4734403                                   NaN                         inflaton, primordial
+620         ai       10.48550/arxiv.1010.0055       https://arxiv.org/abs/1010.0055  inflaton, large-scale structure, primordial
+                             % with AI/ML terms    n
+other ai-labelled                          57.8  230
+other classical-labelled                    0.3  889
+physics, labelled ai                        0.0    5
+physics, labelled classical                 0.0    1
+          label  words  physics_subject  ml_terms rule_met decision
+38           ai     16             True         0       R2  exclude
+151          ai    107             True         0       R2  exclude
+245          ai    120             True         0       R2  exclude
+248          ai    116             True         0       R2  exclude
+513   classical    150             True         0     none     keep
+620          ai    191             True         0       R2  exclude
+938   classical    709            False         0     none     keep
+1078  classical    765            False         0     none     keep
+1106         ai    780            False         4     none     keep
+1122  classical   2075            False         0       R1  exclude
+1124  classical   1206            False         0     none     keep
+
+Modelling rows: 1125 -> 1119 (excluded 6)
+Label
+classical    889
+ai           230
+Name: count, dtype: int64
+Cleaned 1119 abstracts in 2.2 s
+Empty after cleaning: 0
+                     before  after
+LaTeX                    13      0
+keyword / JEL lists      28      0
+section headings         15      0
+HTML tags/entities        0      0
+URLs / e-mails            7      0
+unicode dashes          217      0
+digits                  680      0
+punctuation            1119      0
+
+Average words per abstract: raw 170.2 -> clean 103.0
+
+--- row 0 (ai) ---
+RAW  : Forward-looking forecasting of the inflation rate could help the central bank and other government departments to better use monetary policy to stabilize prices and prevent the impact of inflation on market entities, especially for low- and middle-income groups. It can also help financial institutio
+CLEAN: forward looking forecasting inflation rate could help central bank government department better use monetary policy stabilize price prevent impact inflation market entity especially low middle income group also help financial institution investor better make investment decision sense forecast inflat
+
+--- row 1118 (classical) ---
+RAW  : The Encyclopedia Americana, 2002 edition, concludes its entry on Milton Friedman as follows: “His major work, A Monetary History of the United States, 1867–1960, was published in 1963.” That might be seen as an indirect compliment to Anna J. Schwartz, who coauthored the Monetary History with Friedma
+CLEAN: encyclopedia americana edition concludes entry milton friedman follows major work monetary history united state published might seen indirect compliment anna schwartz coauthored monetary history friedman mentioned encyclopedia entry similarly nobel committee neglected mention schwartz awarding fried
+
+--- row 4 (classical) ---
+RAW  : BackgroundGame theory is useful for identifying conditions under which individual stakeholders in a collective action problem interact in ways that are more cooperative and in the best interest of the collective. The literature applying game theory to healthcare markets predicts that when providers 
+CLEAN: game theory useful identifying condition individual stakeholder collective action problem interact way cooperative best interest collective literature applying game theory healthcare market predicts provider set price service autonomously noncooperative fashion market susceptible ongoing price infla
+Label       ai  classical  total  % ai
+doi_prefix                            
+10.2139     31        261    292  11.0
+10.1016     29        168    197  15.0
+10.1007     22         49     71  31.0
+10.1080      2         54     56   4.0
+10.1111      3         50     53   6.0
+10.1109     44          9     53  83.0
+10.1002      2         31     33   6.0
+10.48550    17          7     24  71.0
+DOI-only test macro-F1: 0.679 | bal. acc: 0.706 | AI recall: 0.609 | accuracy: 0.763
+Test abstracts whose DOI prefix never appears in training: 24 of 224
+                 representation  features  % of matrix non-zero
+0                  BoW unigrams      8061                 0.903
+1               TF-IDF unigrams      8061                 0.903
+2            TF-IDF uni+bigrams     81783                 0.204
+3  TF-IDF uni+bigrams, min_df=2     17468                 0.627
+Terms significant at p < 0.05: 42 of 17468
+Significant terms - TF-IDF: 42 | TF-IDF x 10: 2352 | largest score ratio: 10.0
+Terms significant at p < 0.05 - TF-IDF input: 42 | count input: 2851 of 17468
+            term       chi2      p_value favours
+         machine 401.982609 2.038676e-89      ai
+        learning 400.872899 3.555626e-89      ai
+         network 378.996285 2.058195e-84      ai
+machine learning 355.600000 2.556745e-79      ai
+          neural 349.800631 4.683332e-78      ai
+  neural network 342.071644 2.257914e-76      ai
+          method 288.537526 1.035664e-64      ai
+       algorithm 285.536735 4.667528e-64      ai
+            gold 187.655735 1.032880e-42      ai
+      regression 186.411233 1.930722e-42      ai
+            lstm 170.069565 7.144515e-39      ai
+             svr 154.608696 1.704930e-35      ai
+             ann 154.608696 1.704930e-35      ai
+          forest 146.878261 8.343419e-34      ai
+   random forest 139.147826 4.088542e-32      ai
+      artificial 138.294797 6.282290e-32      ai
+        quantile 121.867072 2.468340e-28      ai
+         bitcoin 112.091304 3.412283e-26      ai
+            used 110.814161 6.498582e-26      ai
+       sentiment 108.833600 1.764981e-25      ai
+Train: 895 | Test: 224
+           train %  test %
+Label                     
+classical     79.4    79.5
+ai            20.6    20.5
+model              Dummy (most frequent)  NB + BoW
+CV train macro-F1                  0.443     0.958
+CV val macro-F1                    0.443     0.843
+CV val std                         0.001     0.022
+test accuracy                      0.795     0.902
+test macro-F1                      0.443     0.852
+test bal. acc                      0.500     0.858
+test AI recall                     0.000     0.783
+fit time (s)                       0.027     0.031
+              precision    recall  f1-score   support
+
+          ai      0.750     0.783     0.766        46
+   classical      0.943     0.933     0.938       178
+
+    accuracy                          0.902       224
+   macro avg      0.847     0.858     0.852       224
+weighted avg      0.904     0.902     0.903       224
+
+ train size  train F1  val F1
+         71     1.000   0.762
+        163     1.000   0.801
+        255     0.996   0.812
+        347     0.980   0.820
+        439     0.976   0.826
+        531     0.972   0.842
+        623     0.964   0.838
+        716     0.958   0.843
+                    rows  CV val macro-F1  CV val AI recall
+with exclusions     1119            0.843             0.712
+without exclusions  1125            0.829             0.692
+Complement NB        done
+Logistic regression  done
+LinearSVC            done
+Random Forest        done
+KNN                  done
+MLP                  done
+model              Complement NB  Logistic regression  LinearSVC  Random Forest    KNN    MLP
+CV train macro-F1          0.847                0.739      1.000          1.000  0.866  1.000
+CV val macro-F1            0.650                0.623      0.833          0.807  0.794  0.815
+CV val std                 0.041                0.020      0.036          0.043  0.044  0.043
+CV val AI recall           0.245                0.207      0.587          0.516  0.588  0.571
+test accuracy              0.866                0.897      0.924          0.929  0.884  0.915
+test macro-F1              0.719                0.803      0.877          0.873  0.816  0.862
+test bal. acc              0.674                0.750      0.856          0.826  0.806  0.842
+test AI recall             0.348                0.500      0.739          0.652  0.674  0.717
+fit time (s)               0.075                0.093      0.075          0.157  0.077  9.775
+LSTM fold 1/5 done
+LSTM fold 2/5 done
+LSTM fold 3/5 done
+LSTM fold 4/5 done
+LSTM fold 5/5 done
+LSTM parameters: 328353
+model              Complement NB  Logistic regression  LinearSVC  Random Forest    KNN    MLP   LSTM
+CV train macro-F1          0.847                0.739      1.000          1.000  0.866  1.000  0.699
+CV val macro-F1            0.650                0.623      0.833          0.807  0.794  0.815  0.573
+CV val std                 0.041                0.020      0.036          0.043  0.044  0.043  0.077
+CV val AI recall           0.245                0.207      0.587          0.516  0.588  0.571  0.152
+test accuracy              0.866                0.897      0.924          0.929  0.884  0.915  0.835
+test macro-F1              0.719                0.803      0.877          0.873  0.816  0.862  0.683
+test bal. acc              0.674                0.750      0.856          0.826  0.806  0.842  0.654
+test AI recall             0.348                0.500      0.739          0.652  0.674  0.717  0.348
+fit time (s)               0.075                0.093      0.075          0.157  0.077  9.775  7.157
+                       CV train macro-F1  CV val macro-F1  CV val std  test accuracy  test macro-F1  test bal. acc  test AI recall  fit time (s)  CV val AI recall
+model                                                                                                                                                             
+NB + BoW                           0.958            0.843       0.022          0.902          0.852          0.858           0.783         0.031             0.712
+LinearSVC                          1.000            0.833       0.036          0.924          0.877          0.856           0.739         0.075             0.587
+MLP                                1.000            0.815       0.043          0.915          0.862          0.842           0.717         9.775             0.571
+Random Forest                      1.000            0.807       0.043          0.929          0.873          0.826           0.652         0.157             0.516
+KNN                                0.866            0.794       0.044          0.884          0.816          0.806           0.674         0.077             0.588
+Complement NB                      0.847            0.650       0.041          0.866          0.719          0.674           0.348         0.075             0.245
+Logistic regression                0.739            0.623       0.020          0.897          0.803          0.750           0.500         0.093             0.207
+LSTM                               0.699            0.573       0.077          0.835          0.683          0.654           0.348         7.157             0.152
+Dummy (most frequent)              0.443            0.443       0.001          0.795          0.443          0.500           0.000         0.027             0.000
+                     grid combinations  est. search time (s)  within 5-min budget  gives probabilities   Rule 1 decision
+model                                                                                                                   
+Complement NB                       60                    22                 True                 True  full grid search
+Logistic regression                144                    67                 True                 True  full grid search
+LinearSVC                          144                    54                 True                False  full grid search
+Random Forest                       96                    75                 True                 True  full grid search
+KNN                                120                    46                 True                 True  full grid search
+MLP                                 72                  3519                False                 True  one targeted fix
+LSTM                                12                   429                False                 True  one targeted fix
+Complement NB          60 combos in    7.6 s | best CV macro-F1 0.850 | {'m__alpha': 0.01, 'v': 'CountVectorizer', 'v__min_df': 2, 'v__ngram_range': (1, 1)}
+Logistic regression   144 combos in   13.3 s | best CV macro-F1 0.865 | {'m__C': 300, 'm__class_weight': 'balanced', 'v': 'TfidfVectorizer', 'v__min_df': 1, 'v__ngram_range': (1, 2), 'v__sublinear_tf': True}
+LinearSVC             144 combos in   12.4 s | best CV macro-F1 0.866 | {'m__C': 5, 'm__class_weight': 'balanced', 'v': 'TfidfVectorizer', 'v__min_df': 1, 'v__ngram_range': (1, 2), 'v__sublinear_tf': True}
+Random Forest          96 combos in   21.6 s | best CV macro-F1 0.865 | {'m__class_weight': 'balanced', 'm__max_features': 'sqrt', 'm__min_samples_leaf': 1, 'v': 'CountVectorizer', 'v__min_df': 1, 'v__ngram_range': (1, 1)}
+KNN                   120 combos in   10.3 s | best CV macro-F1 0.840 | {'m__n_neighbors': 5, 'm__weights': 'distance', 'v': 'TfidfVectorizer', 'v__min_df': 2, 'v__ngram_range': (1, 1), 'v__sublinear_tf': True}
+MLP fix done
+LSTM (class-weighted) fold 1/5 done
+LSTM (class-weighted) fold 2/5 done
+LSTM (class-weighted) fold 3/5 done
+LSTM (class-weighted) fold 4/5 done
+LSTM (class-weighted) fold 5/5 done
+                             enhancement  default CV macro-F1  enhanced CV macro-F1  enhanced CV std  enhanced CV AI recall  enhanced CV train macro-F1  fit time (s)  gives probabilities   gain  beats NB baseline (0.843)
+model                                                                                                                                                                                                                       
+LinearSVC                    grid search                0.833                 0.866            0.021                  0.669                       1.000         0.115                False  0.033                       True
+Logistic regression          grid search                0.623                 0.865            0.016                  0.707                       1.000         0.183                 True  0.242                       True
+Random Forest                grid search                0.807                 0.865            0.018                  0.706                       1.000         0.141                 True  0.058                       True
+Complement NB                grid search                0.650                 0.850            0.027                  0.712                       0.975         0.034                 True  0.200                       True
+KNN                          grid search                0.794                 0.840            0.021                  0.674                       1.000         0.031                 True  0.046                      False
+LSTM                       class weights                0.573                 0.800            0.031                  0.636                       0.936         7.157                 True  0.227                      False
+MLP                  early_stopping=True                0.815                 0.772            0.055                  0.458                       0.966         9.775                 True -0.043                      False
+
+Best enhanced CV macro-F1 = 0.8656; tied (within 0.01): ['LinearSVC', 'Logistic regression', 'Random Forest']
+                     enhanced CV macro-F1  gives probabilities  enhanced CV std  enhanced CV AI recall  fit time (s)
+model                                                                                                               
+Logistic regression                0.8652                 True           0.0157                 0.7068        0.1833
+Random Forest                      0.8651                 True           0.0182                 0.7065        0.1408
+LinearSVC                          0.8656                False           0.0207                 0.6688        0.1153
+
+Final model by Rule 2: Logistic regression
+                    Logistic regression default  Logistic regression enhanced (final)  NB baseline
+test macro-F1                             0.803                                 0.891        0.852
+test balanced acc.                        0.750                                 0.891        0.858
+test AI recall                            0.500                                 0.826        0.783
+              precision    recall  f1-score   support
+
+          ai      0.826     0.826     0.826        46
+   classical      0.955     0.955     0.955       178
+
+    accuracy                          0.929       224
+   macro avg      0.891     0.891     0.891       224
+weighted avg      0.929     0.929     0.929       224
+
+Deployed pipeline matches the evaluated model on all 224 test abstracts: True
+Saved: C:\COURSEWORK\ITNPA4-34\PROJECT_1\ITNPA4-34-Project1\deployment\model.joblib (2.5 MB)
+Classes in model order: ['ai', 'classical']

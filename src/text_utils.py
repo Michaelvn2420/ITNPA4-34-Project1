@@ -35,6 +35,7 @@ def ensure_nltk_data():
 ensure_nltk_data()
 STOP = set(stopwords.words("english"))
 _LEM = WordNetLemmatizer()
+KEEP_SHORT = {"ai", "ml"}       # domain abbreviations kept even though they are shorter than min_len
 
 
 # Structured-abstract headings and publisher boilerplate (describe the format, not the topic)
@@ -67,7 +68,8 @@ def clean_text(text, extra_stop=(), min_len=3):
     t = re.sub(r"[^a-zA-Z\s]", " ", t).lower()         # replace (not delete) non-letters
     stop = STOP | set(extra_stop)
     words = [_LEM.lemmatize(w) for w in word_tokenize(t)]
-    return " ".join(w for w in words if w not in stop and len(w) >= min_len)
+#    return " ".join(w for w in words if w not in stop and len(w) >= min_len)
+    return " ".join(w for w in words if w not in stop and (len(w) >= min_len or w in KEEP_SHORT))
 
 
 def clean_many(texts):

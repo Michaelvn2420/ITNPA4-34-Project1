@@ -1,4 +1,4 @@
 ,Logistic regression default,Logistic regression enhanced (final),NB baseline
 test macro-F1,0.803,0.891,0.852
-test balanced acc.,0.75,0.869,0.858
-test AI recall,0.5,0.761,0.783
+test balanced acc.,0.75,0.891,0.858
+test AI recall,0.5,0.826,0.783

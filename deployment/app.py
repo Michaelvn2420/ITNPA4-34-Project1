@@ -22,9 +22,8 @@ def load_model():
 model = load_model()
 
 st.title("Researchly Research Abstract Classifier")
-st.write("Paste the abstract of a research paper below. The model predicts whether the paper "
-         "uses artificial intelligence methods or classical research methods.")
-
+#st.write("Paste the abstract of a research paper below. The model predicts whether the paper uses artificial intelligence methods or classical research methods.")
+st.write("This app classifies research abstracts as either AI-related or classical research.")
 abstract = st.text_area("Enter research abstract:", height=200)
 
 if st.button("Classify Abstract"):
@@ -38,5 +37,5 @@ if st.button("Classify Abstract"):
         st.success(f"The abstract is classified as: {FRIENDLY[label]}")
         st.metric("Model score", f"{model_score:.0%}")
         st.progress(float(model_score))
-        st.caption("Score = the model's predicted probability for this class. It is not calibrated, "
-           "so treat it as a ranking, not as a true chance of being correct.")
+        st.caption("Score = the model's predicted probability for this class. It is not calibrated, so treat it as a ranking, not as a true chance of being correct.")
+        
